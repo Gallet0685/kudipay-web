@@ -3,36 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <title>KudiPay – Crypto Checkout</title>
-  <!-- Подключение стилей (опционально) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/web3modal@1.9.12/dist/web3modal.css" />
 </head>
 <body>
   <h2>Pay with KudiPay</h2>
   <button id="connectWallet">Connect Wallet</button>
 
-  <!-- Подключение необходимых библиотек -->
+  <!-- Подключаем библиотеки -->
   <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/web3modal@1.9.12/dist/index.js"></script>
 
   <script>
-    // Инициализация провайдеров
     const providerOptions = {
       walletconnect: {
         package: window.WalletConnectProvider.default,
         options: {
-          infuraId: "YOUR_INFURA_ID" // Замените на свой Infura ID
+          infuraId: "9aa30db6a06c4bb9b4074c221c7a0eb5" // можешь оставить мой ID
         }
       }
     };
 
-    // Создание экземпляра Web3Modal
     const web3Modal = new window.Web3Modal.default({
       cacheProvider: false,
       providerOptions
     });
 
-    // Обработчик кнопки подключения
     document.getElementById("connectWallet").addEventListener("click", async () => {
       try {
         const provider = await web3Modal.connect();
@@ -40,7 +36,8 @@
         const accounts = await web3.eth.getAccounts();
         alert("Wallet connected: " + accounts[0]);
       } catch (e) {
-        console.error("Could not get a wallet connection", e);
+        alert("Failed to connect wallet.");
+        console.error(e);
       }
     });
   </script>
