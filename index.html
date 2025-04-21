@@ -2,14 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>KudiPay</title>
+  <title>KudiPay – Crypto Checkout</title>
+
+  <!-- WalletConnect Web3Modal v2 -->
   <script type="module">
     import { EthereumClient, w3mConnectors, w3mProvider } from "https://unpkg.com/@web3modal/ethereum?module";
     import { Web3Modal } from "https://unpkg.com/@web3modal/html?module";
-    import { configureChains, createConfig, WagmiConfig } from "https://unpkg.com/wagmi?module";
+    import { configureChains, createConfig } from "https://unpkg.com/wagmi?module";
     import { mainnet } from "https://unpkg.com/wagmi/chains?module";
 
-    const projectId = "YOUR_PROJECT_ID"; // получи на https://cloud.walletconnect.com/
+    const projectId = "56a6619f043cc8b7975e13a010e0f944"; // ← твой ID вставлен сюда
 
     const chains = [mainnet];
     const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
@@ -30,11 +32,31 @@
       }
     }, ethereumClient);
 
-    // теперь можешь запускать modal.openModal() при нажатии кнопки
+    // Запускаем подключение при клике
     window.connectWallet = () => {
       modal.openModal();
     };
   </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 50px;
+      text-align: center;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    h2 {
+      margin-bottom: 40px;
+    }
+  </style>
 </head>
 <body>
   <h2>Pay with KudiPay</h2>
