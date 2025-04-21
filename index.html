@@ -3,63 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <title>KudiPay – Crypto Checkout</title>
-
-  <!-- Web3Modal WalletConnect V2 -->
-  <link rel="stylesheet" href="https://unpkg.com/@walletconnect/web3modal@2.6.1/dist/style.css" />
-  <script src="https://unpkg.com/@walletconnect/web3modal@2.6.1/dist/index.umd.js"></script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding-top: 50px;
-    }
-    button {
-      padding: 14px 30px;
-      font-size: 16px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-  </style>
+  <!-- Подключение стилей (опционально) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/web3modal@1.9.12/dist/web3modal.css" />
 </head>
 <body>
   <h2>Pay with KudiPay</h2>
-  <button id="payBtn">Connect Wallet</button>
+  <button id="connectWallet">Connect Wallet</button>
+
+  <!-- Подключение необходимых библиотек -->
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3modal@1.9.12/dist/index.js"></script>
 
   <script>
-    // Твой Project ID
-    const projectId = "56a6619f043cc8b7975e13a010e0f944";
-
-    // Конфигурация Web3Modal
-    const metadata = {
-      name: "KudiPay",
-      description: "Pay with crypto in Nigeria",
-      url: "https://your-site.com", // можешь оставить так
-      icons: ["https://walletconnect.com/_next/static/media/logo_mark.4c18b739.svg"]
-    };
-
-    const modal = new window.Web3Modal({
-      projectId,
-      themeMode: "light",
-      walletConnectVersion: 2,
-      metadata
-    });
-
-    const button = document.getElementById("payBtn");
-
-    button.onclick = async () => {
-      try {
-        const session = await modal.connect();
-        const account = session.accounts[0].address;
-        alert("Wallet connected: " + account);
-      } catch (e) {
-        alert("Connection cancelled or failed.");
-        console.error(e);
+    // Инициализация провайдеров
+    const providerOptions = {
+      walletconnect: {
+        package: window.WalletConnectProvider.default,
+        options: {
+          infuraId: "YOUR_INFURA_ID" // Замените на свой Infura ID
+        }
       }
     };
+
+    // Создание экземпляра Web3Modal
+    const web3Modal = new window.Web3Modal.default({
+      cacheProvider: false,
+      providerOptions
+    });
+
+    // Обработчик кнопки подключения
+    document.getElementById("connectWallet").addEventListener("click", async () => {
+      try {
+        const provider = await web3Modal.connect();
+        const web3 = new Web3(provider);
+        const accounts = await web3.eth.getAccounts();
+        alert("Wallet connected: " + accounts[0]);
+      } catch (e) {
+        console.error("Could not get a wallet connection", e);
+      }
+    });
   </script>
 </body>
 </html>
