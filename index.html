@@ -35,6 +35,25 @@
         const provider = await web3Modal.connect();
         const web3 = new Web3(provider);
         const accounts = await web3.eth.getAccounts();
+        // Отправляем заказ на сервер KudiPay
+fetch("https://64947c7b-b817-4dbd-b360-4fd2fb779c86-00-h9wuoq5upwah.kirk.replit.dev/orders", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    wallet: accounts[0],
+    amount: 25 // или любая сумма для теста
+  })
+})
+.then(res => res.json())
+.then(data => {
+  console.log("Order saved:", data);
+  alert("Заказ отправлен на сервер!");
+})
+.catch(err => {
+  console.error("Ошибка при отправке заказа:", err);
+});
         alert("Wallet connected: " + accounts[0]);
       } catch (e) {
         alert("Connection failed.");
