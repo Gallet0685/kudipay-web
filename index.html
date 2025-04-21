@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>KudiPay – Connect Wallet</title>
+  <title>KudiPay – Crypto Checkout</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/web3modal@1.9.12/dist/web3modal.css" />
 </head>
 <body style="text-align: center; font-family: Arial; padding-top: 100px;">
   <h2>Pay with KudiPay</h2>
   <button id="connectWallet" style="padding: 15px 30px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer;">
-    Connect Wallet
+    Connect Wallet & Pay
   </button>
 
   <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
@@ -35,61 +35,42 @@
         const provider = await web3Modal.connect();
         const web3 = new Web3(provider);
         const accounts = await web3.eth.getAccounts();
-
         alert("Wallet connected: " + accounts[0]);
-        const recipient = "0xYourWalletAddressHere"; // ← сюда вставь СВОЙ кошелёк, который принимает оплату
 
-const tx = {
-  from: accounts[0],
-  to: recipient,
-  value: web3.utils.toWei("0.001", "ether") // это пример на 0.001 ETH, можно изменить
-};
+        const recipient = "0x5e715f6e89663fD72826C8fC5d415c22D4Ee0eF7";
+        const amountEth = "0.001";
 
-web3.eth.sendTransaction(tx)
-.then((receipt) => {
-  console.log("Transaction successful:", receipt);
+        const tx = {
+          from: accounts[0],
+          to: recipient,
+          value: web3.utils.toWei(amountEth, "ether")
+        };
 
-  // Отправим заказ в backend
-  fetch("https://64947c7b-b817-4dbd-b360-4fd2fb779c86-00-h9wuoq5upwah.kirk.replit.dev/orders", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      wallet: accounts[0],
-      amount: 0.001,
-      txHash: receipt.transactionHash,
-      status: "paid"
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    alert("Оплата прошла успешно!");
-  });
-})
-.catch((err) => {
-  console.error("Ошибка при транзакции:", err);
-  alert("Ошибка при отправке платежа.");
-});
+        web3.eth.sendTransaction(tx)
+        .then((receipt) => {
+          console.log("Transaction successful:", receipt);
 
-        // Отправка данных на backend
-        fetch("https://64947c7b-b817-4dbd-b360-4fd2fb779c86-00-h9wuoq5upwah.kirk.replit.dev/orders", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            wallet: accounts[0],
-            amount: 25
+          fetch("https://64947c7b-b817-4dbd-b360-4fd2fb779c86-00-h9wuoq5upwah.kirk.replit.dev/orders", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              wallet: accounts[0],
+              amount: parseFloat(amountEth),
+              txHash: receipt.transactionHash,
+              status: "paid"
+            })
           })
+          .then(res => res.json())
+          .then(data => {
+            alert("Оплата прошла успешно!");
+          });
+
         })
-        .then(res => res.json())
-        .then(data => {
-          console.log("Order saved:", data);
-          alert("Заказ отправлен на сервер!");
-        })
-        .catch(err => {
-          console.error("Ошибка при отправке заказа:", err);
+        .catch((err) => {
+          console.error("Ошибка при транзакции:", err);
+          alert("Ошибка при отправке платежа.");
         });
 
       } catch (e) {
