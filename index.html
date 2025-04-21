@@ -2,15 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ShadowPay</title>
+    <title>KudiPay</title>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/client/dist/umd/index.min.js"></script>
 </head>
 <body>
-    <h2>Оплатите с помощью ShadowPay</h2>
-    <button id="payButton">Оплатить через ShadowPay</button>
+    <h2>Pay easily with ShadowPay</h2>
+    <button id="payButton">Pay with Crypto</button>
 
     <script>
-        document.getElementById("payButton").onclick = function() {
-            alert("Здесь будет интеграция WalletConnect.");
+        const payButton = document.getElementById('payButton');
+
+        payButton.onclick = async function() {
+            const connector = new WalletConnect.default({
+                bridge: "https://bridge.walletconnect.org",
+                qrcodeModal: WalletConnect.defaultQRCodeModal,
+                projectId: "YOUR_PROJECT_ID"
+            });
+
+            if (!connector.connected) {
+                await connector.createSession();
+            }
+
+            connector.on("connect", (error, payload) => {
+                if (error) {
+                    alert("Connection error");
+                    return;
+                }
+
+                alert("Wallet connected: " + connector.accounts[0]);
+            });
         };
     </script>
 </body>
