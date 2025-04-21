@@ -37,6 +37,40 @@
         const accounts = await web3.eth.getAccounts();
 
         alert("Wallet connected: " + accounts[0]);
+        const recipient = "0xYourWalletAddressHere"; // ← сюда вставь СВОЙ кошелёк, который принимает оплату
+
+const tx = {
+  from: accounts[0],
+  to: recipient,
+  value: web3.utils.toWei("0.001", "ether") // это пример на 0.001 ETH, можно изменить
+};
+
+web3.eth.sendTransaction(tx)
+.then((receipt) => {
+  console.log("Transaction successful:", receipt);
+
+  // Отправим заказ в backend
+  fetch("https://64947c7b-b817-4dbd-b360-4fd2fb779c86-00-h9wuoq5upwah.kirk.replit.dev/orders", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      wallet: accounts[0],
+      amount: 0.001,
+      txHash: receipt.transactionHash,
+      status: "paid"
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert("Оплата прошла успешно!");
+  });
+})
+.catch((err) => {
+  console.error("Ошибка при транзакции:", err);
+  alert("Ошибка при отправке платежа.");
+});
 
         // Отправка данных на backend
         fetch("https://64947c7b-b817-4dbd-b360-4fd2fb779c86-00-h9wuoq5upwah.kirk.replit.dev/orders", {
