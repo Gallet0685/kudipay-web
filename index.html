@@ -1,37 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>KudiPay</title>
-    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/client/dist/umd/index.min.js"></script>
+  <meta charset="UTF-8">
+  <title>KudiPay Checkout</title>
+  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/client/dist/umd/index.min.js"></script>
 </head>
 <body>
-    <h2>Pay easily with ShadowPay</h2>
-    <button id="payButton">Pay with Crypto</button>
+  <h2>Pay with KudiPay</h2>
+  <button id="payButton">Connect Wallet & Pay</button>
 
-    <script>
-        const payButton = document.getElementById('payButton');
+  <script>
+    const payButton = document.getElementById("payButton");
 
-        payButton.onclick = async function() {
-            const connector = new WalletConnect.default({
-                bridge: "https://bridge.walletconnect.org",
-                qrcodeModal: WalletConnect.defaultQRCodeModal,
-                projectId: "YOUR_PROJECT_ID"
-            });
+    payButton.onclick = async function () {
+      // Создаём WalletConnect-интерфейс
+      const connector = new WalletConnect.default({
+        bridge: "https://bridge.walletconnect.org",
+        qrcodeModal: WalletConnect.defaultQRCodeModal
+      });
 
-            if (!connector.connected) {
-                await connector.createSession();
-            }
+      // Создаём сессию, если ещё не подключен
+      if (!connector.connected) {
+        await connector.createSession();
+      }
 
-            connector.on("connect", (error, payload) => {
-                if (error) {
-                    alert("Connection error");
-                    return;
-                }
+      // Слушаем событие подключения
+      connector.on("connect", async (error, payload) => {
+        if (error) {
+          alert("Connection error");
+          return;
+        }
 
-                alert("Wallet connected: " + connector.accounts[0]);
-            });
-        };
-    </script>
+        // Получаем адрес кошелька пользователя
+        const accounts = payload.params[0].accounts;
+        const walletAddress = accounts[0];
+        alert("Wallet connected: " + walletAddress);
+
+        // Устанавливаем тестовую сумму (например, 25 USDT)
+        const amount = 25;
+
+        // Отправляем данные на backend (этап 2)
+        fetch("https://kudipay-server.username.repl.co/orders", {  // ← ЗАМЕНИ ЭТУ ССЫЛКУ НА СВОЮ
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            wallet: walletAddress,
+            amount: amount
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          console.log("Order saved:", data);
+          alert("Order sent to KudiPay backend!");
+        })
+        .catch(err => {
+          console.error("Error sending order:", err);
+          alert("Error sending order");
+        });
+      });
+    };
+  </script>
 </body>
 </html>
